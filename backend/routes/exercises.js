@@ -42,18 +42,32 @@ router.route("/:id").delete((req, res) => {
 });
 
 // Update an exercise log
-router.route("/update/:id").post((req, res) => {
-  Exercise.findById(req.params.id).then((exercise) => {
-    exercise.username = req.body.username;
-    exercise.description = req.body.description;
-    exercise.duration = Number(req.body.duration);
-    exercise.date = Date.parse(req.body.date);
-
+router.route("/update/:id").patch((req, res) => {
+  Exercise.findOneAndUpdate(
+    req.params.id,
+    { $set: req.body }, // access to update the field(s)
+    { new: true } // returns the update document rather than the original
+  ).then((exercise) => {
     exercise
       .save()
       .then(() => res.json("Exercise updated!"))
       .catch((error) => res.status(400).json({ error }));
   });
 });
+
+// // Update an exercise log
+// router.route("/update/:id").post((req, res) => {
+//   Exercise.findById(req.params.id).then((exercise) => {
+//     exercise.username = req.body.username;
+//     exercise.description = req.body.description;
+//     exercise.duration = Number(req.body.duration);
+//     exercise.date = Date.parse(req.body.date);
+
+//     exercise
+//       .save()
+//       .then(() => res.json("Exercise updated!"))
+//       .catch((error) => res.status(400).json({ error }));
+//   });
+// });
 
 module.exports = router;
