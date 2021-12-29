@@ -1,14 +1,14 @@
-const router = require("express").Router();
+const router = require('express').Router();
 
-const Exercise = require("../models/exercise.model");
+const Exercise = require('../models/exercise.model');
 
-router.route("/").get((req, res) => {
+router.route('/').get((req, res) => {
   Exercise.find() // this is a Promised based mongoose method
     .then((exercises) => res.json(exercises))
-    .catch((error) => res.status(400).json("error: ", error));
+    .catch((error) => res.status(400).json('error: ', error));
 });
 
-router.route("/add").post((req, res) => {
+router.route('/add').post((req, res) => {
   const username = req.body.username;
   const description = req.body.description;
   const duration = Number(req.body.duration);
@@ -23,37 +23,39 @@ router.route("/add").post((req, res) => {
 
   newExercise
     .save()
-    .then(() => res.json("Exercise added!"))
+    .then(() => res.json('Exercise added!'))
     .catch((error) => res.status(404).json({ error }));
 });
 
 // Find specific exercise log
-router.route("/:id").get((req, res) => {
+router.route('/:id').get((req, res) => {
   Exercise.findById(req.params.id)
     .then((exercise) => res.json(exercise))
     .catch((error) => res.status(400).json({ error }));
 });
 
 // Delete an exercise log
-router.route("/:id").delete((req, res) => {
+router.route('/:id').delete((req, res) => {
   Exercise.findByIdAndDelete(req.params.id)
-    .then(() => res.json("Exercise deleted!"))
+    .then(() => res.json('Exercise deleted!'))
     .catch((error) => res.status(400).json(error));
 });
 
 // Update an exercise log
-router.route("/update/:id").patch((req, res) => {
+router.route('/update/:id').patch((req, res) => {
   Exercise.findOneAndUpdate(
     req.params.id,
     { $set: req.body }, // access to update the field(s)
-    { new: true } // returns the update document rather than the original
+    { new: true } // returns the updated document rather than the original
   ).then((exercise) => {
     exercise
       .save()
-      .then(() => res.json("Exercise updated!"))
+      .then(() => res.json('Exercise updated!'))
       .catch((error) => res.status(400).json({ error }));
   });
 });
+
+module.exports = router;
 
 // // Update an exercise log
 // router.route("/update/:id").post((req, res) => {
@@ -69,5 +71,3 @@ router.route("/update/:id").patch((req, res) => {
 //       .catch((error) => res.status(400).json({ error }));
 //   });
 // });
-
-module.exports = router;

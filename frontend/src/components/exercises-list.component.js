@@ -1,10 +1,93 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
+import axios from 'axios';
+
+const Exercise = (props) => (
+  <tr>
+    {/* <td>{props.exercise._id}</td> */}
+    <td>{props.exercise.username}</td>
+    <td>{props.exercise.description}</td>
+    <td>{props.exercise.duration}</td>
+    <td>{new Date(props.exercise.date).toDateString()}</td>
+    {/* {console.log(new Date(props.exercise.date).toDateString())} */}
+    <td>
+      <Link to={`/edit/${props.exercise._id}`}>
+        <button className="btn btn-success">Edit</button>
+      </Link>
+      |
+      <button
+        href="#"
+        onClick={() => {
+          props.deleteExercise(props.exercise._id);
+        }}
+        className="btn btn-danger"
+      >
+        Delete
+      </button>
+    </td>
+  </tr>
+);
 
 export default class ExercisesList extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      exercises: [],
+    };
+
+    this.deleteExercise = this.deleteExercise.bind(this);
+  }
+
+  componentDidMount() {
+    axios
+      .get('http://localhost:5000/exercises/')
+      .then((response) => {
+        this.setState({ exercises: response.data });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
+  deleteExercise(id) {
+    axios
+      .delete(`http://localhost:5000/exercises/${id}`)
+      .then((res) => console.log(res.data));
+    this.setState({
+      exercises: this.state.exercises.filter((exercise) => exercise._id !== id),
+    });
+  }
+
+  exerciseList() {
+    return this.state.exercises.map((currentexercise) => {
+      return (
+        <Exercise
+          exercise={currentexercise}
+          deleteExercise={this.deleteExercise}
+          key={currentexercise._id}
+        />
+      );
+    });
+  }
+
   render() {
     return (
       <div>
-        <p>You are on the Exercises List Component</p>
+        <h3>Logged Exercises</h3>
+        <table className="table">
+          <thead className="thead-light">
+            <tr>
+              {/* <th>ID</th> */}
+              <th>Username</th>
+              <th>Description</th>
+              <th>Duration</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>{this.exerciseList()}</tbody>
+        </table>
       </div>
     );
   }
